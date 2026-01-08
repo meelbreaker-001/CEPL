@@ -67,7 +67,11 @@ export const COLLEGE_INFO = {
     email: "example@gmail.com",
     workingHours: "Monday to Saturday, 8:30 AM – 4:05 PM",
     socials: [
-        { name: "Instagram", url: "#", icon: Instagram },
+        { 
+          name: "Instagram", 
+          url: "https://www.instagram.com/adhiyamaancollegeofengineering?igsh=MTc1MTVybml4Y2prcw==", 
+          icon: Instagram 
+        },
         { name: "X (Twitter)", url: "#", icon: Twitter },
         { name: "YouTube", url: "#", icon: Youtube },
         { name: "LinkedIn", url: "#", icon: Linkedin },

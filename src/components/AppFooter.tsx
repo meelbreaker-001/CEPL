@@ -24,11 +24,6 @@ const AppFooter: React.FC<AppFooterProps> = ({ info }) => {
           <div>
             <h4 className="text-lg font-semibold mb-2 text-primary">Contact</h4>
             <div className="space-y-2">
-              {/* Phone */}
-              <div className="flex items-center justify-center md:justify-start text-sm text-muted-foreground">
-                <Phone className="w-4 h-4 mr-2 flex-shrink-0" />
-                <a href={`tel:${info.phone}`} className="hover:text-primary transition-colors">{info.phone}</a>
-              </div>
               
               {/* Email */}
               <div className="flex items-center justify-center md:justify-start text-sm text-muted-foreground">

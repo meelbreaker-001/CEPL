@@ -8,14 +8,16 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import Autoplay from "embla-carousel-autoplay";
 
 interface EventSectionProps {
   title: string;
   events: Event[];
   onViewDetails: (event: Event) => void;
+  autoplay?: boolean;
 }
 
-const EventSection: React.FC<EventSectionProps> = ({ title, events, onViewDetails }) => {
+const EventSection: React.FC<EventSectionProps> = ({ title, events, onViewDetails, autoplay = false }) => {
   if (events.length === 0) {
     return (
       <section className="container mx-auto px-4 py-8">
@@ -24,6 +26,16 @@ const EventSection: React.FC<EventSectionProps> = ({ title, events, onViewDetail
       </section>
     );
   }
+
+  const plugins = autoplay 
+    ? [
+        Autoplay({
+          delay: 4000, // Scroll every 4 seconds
+          stopOnInteraction: true,
+          stopOnMouseEnter: true,
+        }),
+      ]
+    : [];
 
   return (
     <section className="py-8 md:py-12 relative">
@@ -35,6 +47,7 @@ const EventSection: React.FC<EventSectionProps> = ({ title, events, onViewDetail
         opts={{
           align: "start",
         }}
+        plugins={plugins}
         className="w-full"
       >
         {/* We use padding on the outer div and negative margin/padding on CarouselContent/Item to achieve edge-to-edge scrolling while respecting container padding */}

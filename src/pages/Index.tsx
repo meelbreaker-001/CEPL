@@ -41,6 +41,7 @@ const Index = () => {
           title="Discover Upcoming Events"
           events={upcomingEvents}
           onViewDetails={handleViewDetails}
+          autoplay={true}
         />
         
         {/* Separator for visual clarity */}

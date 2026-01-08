@@ -63,7 +63,7 @@ export interface SocialLink {
 
 export const COLLEGE_INFO = {
     name: "Adhiyamaan College of Engineering",
-    address: "Hosur, Tamil Nadu 635109",
+    address: "Dr.M.G.R.Nagar, Hosur, Krishnagiri District, Tamil Nadu, India. Pin:635 130",
     email: "hod_cse-cs@adhiyamaan.ac.in",
     workingHours: "Monday to Saturday, 8:30 AM – 4:05 PM",
     socials: [

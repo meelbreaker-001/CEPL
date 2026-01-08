@@ -15,13 +15,13 @@ const EventDetailsDialog: React.FC<EventDetailsDialogProps> = ({ event, isOpen, 
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px] md:max-w-lg">
+      <DialogContent className="sm:max-w-[425px] md:max-w-lg rounded-3xl">
         <DialogHeader>
-          <DialogTitle className="text-2xl">{event.name}</DialogTitle>
+          <DialogTitle className="text-2xl font-bold">{event.name}</DialogTitle>
         </DialogHeader>
         
         <div className="space-y-4 py-2">
-          <div className="aspect-[4/3] bg-muted rounded-lg flex items-center justify-center overflow-hidden">
+          <div className="aspect-[4/3] bg-muted rounded-2xl flex items-center justify-center overflow-hidden">
             <img 
               src={event.posterUrl} 
               alt={`Poster for ${event.name}`} 
@@ -29,12 +29,12 @@ const EventDetailsDialog: React.FC<EventDetailsDialogProps> = ({ event, isOpen, 
             />
           </div>
           
-          <div className="flex items-center text-sm text-muted-foreground">
-            <Calendar className="w-4 h-4 mr-2" />
-            <span className="font-medium">{event.date}</span>
+          <div className="flex items-center text-sm text-muted-foreground bg-secondary/50 w-fit px-3 py-1 rounded-full">
+            <Calendar className="w-4 h-4 mr-2" strokeWidth={2.5} />
+            <span className="font-semibold">{event.date}</span>
           </div>
 
-          <h3 className="font-semibold text-lg mt-4">
+          <h3 className="font-bold text-lg mt-4">
             {event.isUpcoming ? "Event Description" : "Event Summary"}
           </h3>
           
@@ -44,12 +44,12 @@ const EventDetailsDialog: React.FC<EventDetailsDialogProps> = ({ event, isOpen, 
         </div>
         
         {event.isUpcoming ? (
-          <Button className="w-full">
-            Register / View Button
+          <Button className="w-full rounded-full py-6 text-base font-semibold">
+            Register Now
           </Button>
         ) : (
-          <Button variant="outline" className="w-full" disabled>
-            <Info className="w-4 h-4 mr-2" />
+          <Button variant="outline" className="w-full rounded-full py-6 text-base font-semibold" disabled>
+            <Info className="w-4 h-4 mr-2" strokeWidth={2.5} />
             Event Completed
           </Button>
         )}

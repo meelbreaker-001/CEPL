@@ -11,12 +11,11 @@ interface EventCardProps {
 const EventCard: React.FC<EventCardProps> = ({ event, onViewDetails }) => {
   return (
     <Card 
-      className="w-[280px] flex-shrink-0 cursor-pointer hover:shadow-xl transition-shadow duration-300"
+      className="w-[280px] flex-shrink-0 cursor-pointer hover:shadow-xl transition-all duration-300 rounded-2xl border-none shadow-sm"
       onClick={() => onViewDetails(event)}
     >
       <div className="p-0">
-        {/* Poster image area (4:3 aspect ratio for poster look) */}
-        <div className="aspect-[4/3] bg-muted rounded-t-lg flex items-center justify-center overflow-hidden">
+        <div className="aspect-[4/3] bg-muted rounded-t-2xl flex items-center justify-center overflow-hidden">
           <img 
             src={event.posterUrl} 
             alt={`Poster for ${event.name}`} 
@@ -24,14 +23,14 @@ const EventCard: React.FC<EventCardProps> = ({ event, onViewDetails }) => {
           />
         </div>
       </div>
-      <CardContent className="p-4">
+      <CardContent className="p-5">
         <CardTitle className="text-lg font-semibold mb-1 line-clamp-2">{event.name}</CardTitle>
-        <p className="text-sm text-muted-foreground">{event.date}</p>
+        <p className="text-sm text-muted-foreground font-medium">{event.date}</p>
       </CardContent>
-      <CardFooter className="p-4 pt-0">
+      <CardFooter className="p-5 pt-0">
         <Button 
           variant={event.isUpcoming ? "default" : "outline"} 
-          className="w-full"
+          className="w-full rounded-full font-medium"
           onClick={(e) => {
             e.stopPropagation(); 
             onViewDetails(event);

@@ -36,6 +36,12 @@ const EventSection: React.FC<EventSectionProps> = ({ title, events, onViewDetail
         }),
       ]
     : [];
+    
+  // Configure options: enable looping for continuous motion if autoplay is active
+  const carouselOpts = {
+    align: "start" as const,
+    loop: autoplay,
+  };
 
   return (
     <section className="py-8 md:py-12 relative">
@@ -44,9 +50,7 @@ const EventSection: React.FC<EventSectionProps> = ({ title, events, onViewDetail
       </div>
       
       <Carousel
-        opts={{
-          align: "start",
-        }}
+        opts={carouselOpts}
         plugins={plugins}
         className="w-full"
       >

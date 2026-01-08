@@ -9,6 +9,8 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
+import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
 
 interface EventSectionProps {
   title: string;
@@ -18,11 +20,21 @@ interface EventSectionProps {
 }
 
 const EventSection: React.FC<EventSectionProps> = ({ title, events, onViewDetails, autoplay = false }) => {
+  // Determine the route based on the title
+  const eventType = title.toLowerCase().includes('upcoming') ? 'upcoming' : 'past';
+  const showAllPath = `/events/${eventType}`;
+
   if (events.length === 0) {
     return (
       <section className="container mx-auto px-4 py-8">
         <h2 className="text-2xl md:text-3xl font-bold mb-6 text-primary">{title}</h2>
         <p className="text-muted-foreground">No events currently listed.</p>
+        {/* Show All button */}
+        <div className="mt-4 text-center">
+          <Button variant="outline" asChild>
+            <Link to={showAllPath}>Show All...</Link>
+          </Button>
+        </div>
       </section>
     );
   }
@@ -76,6 +88,13 @@ const EventSection: React.FC<EventSectionProps> = ({ title, events, onViewDetail
         <CarouselPrevious className="hidden md:flex absolute left-8 top-1/2 -translate-y-1/2" />
         <CarouselNext className="hidden md:flex absolute right-8 top-1/2 -translate-y-1/2" />
       </Carousel>
+
+      {/* Show All Button */}
+      <div className="container mx-auto px-4 mt-8 text-center">
+        <Button variant="outline" asChild>
+          <Link to={showAllPath}>Show All...</Link>
+        </Button>
+      </div>
     </section>
   );
 };

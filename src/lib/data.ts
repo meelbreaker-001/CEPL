@@ -84,7 +84,7 @@ export const COLLEGE_INFO = {
         },
         { 
           name: "LinkedIn", 
-          url: "https://www.linkedin.com/school/adhiyamaan-college-of-education/", 
+          url: "https://www.linkedin.com/in/adhiyamaan-college-of-engineering-hosur-34841825b?utm_source=share_via&utm_content=profile&utm_medium=member_android", 
           icon: Linkedin 
         },
     ] as SocialLink[]

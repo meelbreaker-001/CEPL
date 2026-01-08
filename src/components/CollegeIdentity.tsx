@@ -8,7 +8,7 @@ interface CollegeIdentityProps {
 
 const CollegeIdentity: React.FC<CollegeIdentityProps> = ({ logoUrl, redirectUrl }) => {
   return (
-    <section id="college-identity" className="py-8 md:py-12 bg-primary text-primary-foreground shadow-lg">
+    <section id="college-identity" className="py-8 md:py-12 bg-white text-foreground border-b">
       <div className="container mx-auto px-4 text-center">
         
         {/* Logo wrapped in an anchor tag for redirection */}
@@ -22,7 +22,7 @@ const CollegeIdentity: React.FC<CollegeIdentityProps> = ({ logoUrl, redirectUrl 
           <img 
             src={logoUrl} 
             alt="College Logo" 
-            className="h-16 mx-auto" 
+            className="h-24 mx-auto" 
           />
         </a>
         

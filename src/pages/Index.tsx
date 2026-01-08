@@ -5,6 +5,7 @@ import EventSection from '@/components/EventSection';
 import AppFooter from '@/components/AppFooter';
 import EventDetailsDialog from '@/components/EventDetailsDialog';
 import { MadeWithDyad } from "@/components/made-with-dyad";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const Index = () => {
   // Filter events based on status
@@ -25,8 +26,13 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-background text-foreground">
+    <div className="min-h-screen flex flex-col bg-background text-foreground relative">
       
+      {/* Theme Toggle positioned at the top-right */}
+      <div className="absolute top-4 right-4 z-50">
+        <ThemeToggle />
+      </div>
+
       {/* 1. College Identity Section */}
       <CollegeIdentity 
         collegeName={COLLEGE_INFO.name}

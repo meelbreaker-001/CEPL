@@ -2,11 +2,13 @@ import React from 'react';
 import { COLLEGE_INFO, SocialLink } from '@/lib/data';
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
-import { Phone, Mail, Clock } from 'lucide-react';
+import { Mail, Clock, Send } from 'lucide-react';
 
 interface AppFooterProps {
   info: typeof COLLEGE_INFO;
 }
+
+const CONTACT_PAGE_URL = "https://adhiyamaan.ac.in/ace/contactkeyperson.php";
 
 const AppFooter: React.FC<AppFooterProps> = ({ info }) => {
   return (
@@ -17,7 +19,9 @@ const AppFooter: React.FC<AppFooterProps> = ({ info }) => {
           {/* Address */}
           <div>
             <h4 className="text-lg font-semibold mb-2 text-primary">Address</h4>
-            <p className="text-sm text-muted-foreground">{info.address}</p>
+            <p className="text-sm text-muted-foreground whitespace-pre-line">
+              {info.address.split(',').join(',\n')}
+            </p>
           </div>
 
           {/* Contact */}
@@ -35,6 +39,16 @@ const AppFooter: React.FC<AppFooterProps> = ({ info }) => {
               <div className="flex items-center justify-center md:justify-start text-sm text-muted-foreground">
                 <Clock className="w-4 h-4 mr-2 flex-shrink-0" />
                 <span>{info.workingHours}</span>
+              </div>
+
+              {/* Contact Page Button */}
+              <div className="pt-4">
+                <Button asChild size="sm">
+                  <a href={CONTACT_PAGE_URL} target="_blank" rel="noopener noreferrer">
+                    <Send className="w-4 h-4 mr-2" />
+                    Get in Touch
+                  </a>
+                </Button>
               </div>
             </div>
           </div>

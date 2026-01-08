@@ -30,7 +30,7 @@ const Index = () => {
       {/* 1. College Identity Section */}
       <CollegeIdentity 
         collegeName={COLLEGE_INFO.name}
-        logoUrl="/logo33.gif" 
+        logoUrl="https://adhiyamaan.ac.in/ace/images/logo33.gif" 
         redirectUrl="https://adhiyamaan.ac.in/ace/" 
       />
 

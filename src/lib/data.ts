@@ -62,9 +62,11 @@ export interface SocialLink {
 }
 
 export const COLLEGE_INFO = {
-    name: "Metropolitan University College of Technology",
-    address: "123 University Drive, Tech City, State 90210",
-    contact: "events@mucot.edu | (555) 123-4567",
+    name: "Adhiyamaan College of Engineering",
+    address: "Hosur, Tamil Nadu 635109",
+    phone: "+91 94878 19149",
+    email: "hod_cse-cs@adhiyamaan.ac.in",
+    workingHours: "Monday to Saturday, 8:30 AM – 4:05 PM",
     socials: [
         { name: "Instagram", url: "#", icon: Instagram },
         { name: "X (Twitter)", url: "#", icon: Twitter },

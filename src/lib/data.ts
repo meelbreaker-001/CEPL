@@ -14,7 +14,7 @@ export const MOCK_EVENTS: Event[] = [
   {
     id: "e1",
     name: "Annual Tech Summit 2024",
-    date: "November 15, 2024",
+    date: "November 15, 2.024",
     description: "A gathering of innovators and tech enthusiasts discussing the future of AI and sustainable technology. Join us for keynotes, workshops, and networking opportunities.",
     isUpcoming: true,
     posterUrl: "/placeholder.svg",
@@ -64,7 +64,7 @@ export interface SocialLink {
 export const COLLEGE_INFO = {
     name: "Adhiyamaan College of Engineering",
     address: "Dr.M.G.R.Nagar, Hosur, Krishnagiri District, Tamil Nadu, India. Pin:635 130",
-    email: "hod_cse-cs@adhiyamaan.ac.in",
+    email: "example@gmail.com",
     workingHours: "Monday to Saturday, 8:30 AM – 4:05 PM",
     socials: [
         { name: "Instagram", url: "#", icon: Instagram },

@@ -1,11 +1,12 @@
 import React from 'react';
 
 interface CollegeIdentityProps {
+  collegeName: string;
   logoUrl: string;
   redirectUrl: string;
 }
 
-const CollegeIdentity: React.FC<CollegeIdentityProps> = ({ logoUrl, redirectUrl }) => {
+const CollegeIdentity: React.FC<CollegeIdentityProps> = ({ collegeName, logoUrl, redirectUrl }) => {
   return (
     <section id="college-identity" className="py-12 md:py-20 bg-primary text-primary-foreground shadow-lg">
       <div className="container mx-auto px-4 text-center">
@@ -25,7 +26,9 @@ const CollegeIdentity: React.FC<CollegeIdentityProps> = ({ logoUrl, redirectUrl 
           />
         </a>
         
-        {/* Removed h1 college name */}
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight mb-2">
+          {collegeName}
+        </h1>
         
         <p className="mt-2 text-base sm:text-lg opacity-80 font-light">
           Official Event Landing Page

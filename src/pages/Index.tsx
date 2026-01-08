@@ -6,6 +6,7 @@ import AppFooter from '@/components/AppFooter';
 import EventDetailsDialog from '@/components/EventDetailsDialog';
 import { MadeWithDyad } from "@/components/made-with-dyad";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { Separator } from "@/components/ui/separator";
 
 const Index = () => {
   // Filter events based on status
@@ -33,7 +34,7 @@ const Index = () => {
         <ThemeToggle />
       </div>
 
-      {/* 1. College Identity Section */}
+      {/* 1. College Identity Section (has its own border-b) */}
       <CollegeIdentity 
         collegeName={COLLEGE_INFO.name}
         logoUrl="https://adhiyamaan.ac.in/ace/images/logo33.gif" 
@@ -50,9 +51,8 @@ const Index = () => {
           autoplay={true}
         />
         
-        {/* Separator for visual clarity */}
         <div className="container mx-auto px-4">
-          <hr className="border-t border-border" />
+          <Separator />
         </div>
 
         {/* 3. Past Events Section */}
@@ -62,10 +62,14 @@ const Index = () => {
           onViewDetails={handleViewDetails}
         />
         
+        <div className="container mx-auto px-4 py-4">
+          <Separator />
+        </div>
+
         <MadeWithDyad />
       </main>
 
-      {/* 4. Footer Section */}
+      {/* 4. Footer Section (has its own border-t) */}
       <AppFooter info={COLLEGE_INFO} />
 
       {/* Event Details Dialog */}

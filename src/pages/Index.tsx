@@ -28,7 +28,10 @@ const Index = () => {
     <div className="min-h-screen flex flex-col bg-background text-foreground">
       
       {/* 1. College Identity Section */}
-      <CollegeIdentity collegeName={COLLEGE_INFO.name} />
+      <CollegeIdentity 
+        logoUrl="/logo33.gif" 
+        redirectUrl="https://adhiyamaan.ac.in/ace/" 
+      />
 
       <main className="flex-grow">
         

@@ -14,7 +14,7 @@ export const MOCK_EVENTS: Event[] = [
   {
     id: "e1",
     name: "Annual Tech Summit 2024",
-    date: "November 15, 2.024",
+    date: "November 15, 2024",
     description: "A gathering of innovators and tech enthusiasts discussing the future of AI and sustainable technology. Join us for keynotes, workshops, and networking opportunities.",
     isUpcoming: true,
     posterUrl: "/placeholder.svg",
@@ -72,8 +72,20 @@ export const COLLEGE_INFO = {
           url: "https://www.instagram.com/adhiyamaancollegeofengineering?igsh=MTc1MTVybml4Y2prcw==", 
           icon: Instagram 
         },
-        { name: "X (Twitter)", url: "#", icon: Twitter },
-        { name: "YouTube", url: "#", icon: Youtube },
-        { name: "LinkedIn", url: "#", icon: Linkedin },
+        { 
+          name: "X (Twitter)", 
+          url: "https://x.com/Adhiyamaan69822", 
+          icon: Twitter 
+        },
+        { 
+          name: "YouTube", 
+          url: "https://youtube.com/@acehosur?si=-kFoE6nMcwvk-2MO", 
+          icon: Youtube 
+        },
+        { 
+          name: "LinkedIn", 
+          url: "https://www.linkedin.com/school/adhiyamaan-college-of-education/", 
+          icon: Linkedin 
+        },
     ] as SocialLink[]
 }

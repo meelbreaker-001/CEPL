@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Event } from '@/lib/data';
-import { ImagePlus, X, Upload, ImageIcon } from 'lucide-react';
+import { ImagePlus, X, Upload, ImageIcon, Plus } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 

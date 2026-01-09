@@ -1,29 +1,62 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MOCK_EVENTS, Event } from '@/lib/data';
+import { supabase } from '@/integrations/supabase/client';
+import { Event } from '@/lib/data';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Plus, LogOut, Edit2, Trash2, Calendar, Image as ImageIcon, History, Upload } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AdminEventForm from '@/components/AdminEventForm';
-import { showSuccess } from '@/utils/toast';
+import { showSuccess, showError } from '@/utils/toast';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
-  const [events, setEvents] = useState<Event[]>(MOCK_EVENTS);
+  const [events, setEvents] = useState<Event[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const isAdmin = localStorage.getItem('isAdmin');
-    if (isAdmin !== 'true') {
+    checkUser();
+    fetchEvents();
+  }, []);
+
+  const checkUser = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
       navigate('/admin');
     }
-  }, [navigate]);
+  };
 
-  const handleLogout = () => {
-    localStorage.removeItem('isAdmin');
+  const fetchEvents = async () => {
+    setIsLoading(true);
+    const { data, error } = await supabase
+      .from('events')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      showError('Failed to fetch events');
+    } else {
+      // Map snake_case from DB to camelCase for UI
+      const mappedEvents = data.map((e: any) => ({
+        id: e.id,
+        name: e.name,
+        date: e.date,
+        description: e.description,
+        isUpcoming: e.is_upcoming,
+        posterUrl: e.poster_url,
+        summary: e.summary,
+        galleryUrls: e.gallery_urls,
+      }));
+      setEvents(mappedEvents);
+    }
+    setIsLoading(false);
+  };
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
     navigate('/admin');
   };
 
@@ -33,9 +66,8 @@ const AdminDashboard = () => {
   };
 
   const handleAddPastHighlight = () => {
-    // We pass a mock object with isUpcoming: false to trigger the past highlights form by default
     setEditingEvent({
-      id: '', // Empty ID signifies a new entry
+      id: '',
       name: '',
       date: '',
       description: '',
@@ -52,21 +84,54 @@ const AdminDashboard = () => {
     setIsDialogOpen(true);
   };
 
-  const handleDeleteEvent = (id: string) => {
-    setEvents(events.filter(e => e.id !== id));
-    showSuccess('Event deleted successfully');
+  const handleDeleteEvent = async (id: string) => {
+    const { error } = await supabase
+      .from('events')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      showError('Failed to delete event');
+    } else {
+      setEvents(events.filter(e => e.id !== id));
+      showSuccess('Event deleted successfully');
+    }
   };
 
-  const handleSaveEvent = (data: any) => {
+  const handleSaveEvent = async (formData: any) => {
+    const dbData = {
+      name: formData.name,
+      date: formData.date,
+      description: formData.description,
+      is_upcoming: formData.isUpcoming,
+      poster_url: formData.posterUrl,
+      summary: formData.summary,
+      gallery_urls: formData.galleryUrls,
+    };
+
     if (editingEvent && editingEvent.id) {
-      // Update existing
-      setEvents(events.map(e => e.id === editingEvent.id ? { ...e, ...data } : e));
-      showSuccess('Event updated successfully');
+      const { error } = await supabase
+        .from('events')
+        .update(dbData)
+        .eq('id', editingEvent.id);
+
+      if (error) {
+        showError('Failed to update event');
+      } else {
+        showSuccess('Event updated successfully');
+        fetchEvents();
+      }
     } else {
-      // Create new
-      const newEvent = { ...data, id: Math.random().toString(36).substr(2, 9) };
-      setEvents([newEvent, ...events]);
-      showSuccess('New event added successfully');
+      const { error } = await supabase
+        .from('events')
+        .insert([dbData]);
+
+      if (error) {
+        showError('Failed to add event');
+      } else {
+        showSuccess('New event added successfully');
+        fetchEvents();
+      }
     }
     setIsDialogOpen(false);
   };
@@ -77,7 +142,9 @@ const AdminDashboard = () => {
   const EventList = ({ items, type }: { items: Event[], type: 'upcoming' | 'past' }) => (
     <div className="space-y-4">
       {items.length === 0 ? (
-        <p className="text-center py-10 text-muted-foreground border rounded-lg bg-background">No {type} events found.</p>
+        <p className="text-center py-10 text-muted-foreground border rounded-lg bg-background">
+          {isLoading ? 'Loading events...' : `No ${type} events found.`}
+        </p>
       ) : (
         items.map((event) => (
           <Card key={event.id} className="overflow-hidden">
@@ -103,15 +170,9 @@ const AdminDashboard = () => {
                     )}
                   </div>
                   <div className="flex items-center gap-2">
-                    {type === 'past' ? (
-                      <Button variant="outline" size="sm" className="bg-primary/5 hover:bg-primary/10 border-primary/20 text-primary" onClick={() => handleEditEvent(event)}>
-                        <ImageIcon className="w-4 h-4 mr-2" /> Update Highlights
-                      </Button>
-                    ) : (
-                      <Button variant="outline" size="sm" onClick={() => handleEditEvent(event)}>
-                        <Edit2 className="w-4 h-4 mr-2" /> Edit Info
-                      </Button>
-                    )}
+                    <Button variant="outline" size="sm" onClick={() => handleEditEvent(event)}>
+                      <Edit2 className="w-4 h-4 mr-2" /> {type === 'past' ? 'Update Highlights' : 'Edit Info'}
+                    </Button>
                     <Button variant="outline" size="sm" className="text-destructive hover:bg-destructive/10" onClick={() => handleDeleteEvent(event.id)}>
                       <Trash2 className="w-4 h-4" />
                     </Button>

@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -9,7 +11,7 @@ import { showSuccess, showError } from '@/utils/toast';
 import { Lock } from 'lucide-react';
 
 const AdminLogin = () => {
-  const [email, setEmail] = useState('');
+  const [adminId, setAdminId] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
@@ -18,13 +20,18 @@ const AdminLogin = () => {
     e.preventDefault();
     setIsLoading(true);
     
+    // Supabase Auth requires an email format. 
+    // If you enter a plain ID, we append a suffix internally to match the user created in the dashboard.
+    const emailToUse = adminId.includes('@') ? adminId : `${adminId}@admin.local`;
+
     const { error } = await supabase.auth.signInWithPassword({
-      email,
+      email: emailToUse,
       password,
     });
 
     if (error) {
-      showError(error.message);
+      showError("Login failed. Please check your Admin ID and Password.");
+      console.error("Login error:", error.message);
     } else {
       showSuccess('Logged in successfully');
       navigate('/admin/dashboard');
@@ -43,7 +50,7 @@ const AdminLogin = () => {
           </div>
           <CardTitle className="text-2xl text-center">Admin Login</CardTitle>
           <CardDescription className="text-center">
-            Enter your credentials to manage college events
+            Use your credentials to manage college events
           </CardDescription>
         </CardHeader>
         <form onSubmit={handleLogin}>
@@ -52,10 +59,10 @@ const AdminLogin = () => {
               <Label htmlFor="adminId">Admin ID</Label>
               <Input 
                 id="adminId" 
-                type="email" 
-                placeholder="admin@example.com" 
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                type="text" 
+                placeholder="Enter Admin ID" 
+                value={adminId}
+                onChange={(e) => setAdminId(e.target.value)}
                 required
               />
             </div>

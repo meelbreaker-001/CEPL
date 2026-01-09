@@ -46,7 +46,7 @@ const AppFooter: React.FC<AppFooterProps> = ({ info }) => {
                 <Button asChild size="sm">
                   <a href={CONTACT_PAGE_URL} target="_blank" rel="noopener noreferrer">
                     <Send className="w-4 h-4 mr-2" />
-                    Get in Touch
+                    Official Contact
                   </a>
                 </Button>
               </div>

@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { ShieldCheck } from 'lucide-react';
 import { MOCK_EVENTS, COLLEGE_INFO, Event } from '@/lib/data';
 import CollegeIdentity from '@/components/CollegeIdentity';
 import EventSection from '@/components/EventSection';
@@ -7,6 +9,7 @@ import EventDetailsDialog from '@/components/EventDetailsDialog';
 import { MadeWithDyad } from "@/components/made-with-dyad";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
 
 const Index = () => {
   // Filter events based on status
@@ -29,8 +32,14 @@ const Index = () => {
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground relative">
       
-      {/* Theme Toggle positioned at the top-right */}
-      <div className="absolute top-4 right-4 z-50">
+      {/* Top right actions */}
+      <div className="absolute top-4 right-4 z-50 flex items-center gap-2">
+        <Button variant="outline" size="icon" className="rounded-full shadow-sm" asChild>
+          <Link to="/admin">
+            <ShieldCheck className="h-[1.2rem] w-[1.2rem]" />
+            <span className="sr-only">Admin Login</span>
+          </Link>
+        </Button>
         <ThemeToggle />
       </div>
 

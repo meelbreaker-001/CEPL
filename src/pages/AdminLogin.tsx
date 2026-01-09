@@ -49,9 +49,9 @@ const AdminLogin = () => {
         <form onSubmit={handleLogin}>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="adminId">Admin ID</Label>
               <Input 
-                id="email" 
+                id="adminId" 
                 type="email" 
                 placeholder="admin@example.com" 
                 value={email}

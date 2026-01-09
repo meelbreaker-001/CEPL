@@ -6,8 +6,9 @@ export interface Event {
   date: string; // e.g., "October 26, 2024"
   description: string;
   isUpcoming: boolean;
-  posterUrl: string; // Placeholder URL
+  posterUrl: string; 
   summary?: string; // Used for past events
+  galleryUrls?: string[]; // Added for past event highlights
 }
 
 export const MOCK_EVENTS: Event[] = [
@@ -43,6 +44,7 @@ export const MOCK_EVENTS: Event[] = [
     isUpcoming: false,
     posterUrl: "/placeholder.svg",
     summary: "Successful turnout with over 500 alumni attending. Keynote speech by CEO Jane Doe focused on career growth and mentorship. Photos available in the gallery.",
+    galleryUrls: ["/placeholder.svg", "/placeholder.svg"]
   },
   {
     id: "e5",
@@ -52,6 +54,7 @@ export const MOCK_EVENTS: Event[] = [
     isUpcoming: false,
     posterUrl: "/placeholder.svg",
     summary: "Winning team developed an innovative waste management solution using IoT sensors. Total prize pool of $5,000 distributed. The event fostered great collaboration.",
+    galleryUrls: ["/placeholder.svg"]
   },
 ];
 

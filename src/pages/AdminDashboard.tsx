@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { MOCK_EVENTS, Event } from '@/lib/data';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Plus, LogOut, Edit2, Trash2, Calendar, Image as ImageIcon, History } from 'lucide-react';
+import { Plus, LogOut, Edit2, Trash2, Calendar, Image as ImageIcon, History, Upload } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AdminEventForm from '@/components/AdminEventForm';
@@ -27,8 +27,23 @@ const AdminDashboard = () => {
     navigate('/admin');
   };
 
-  const handleAddEvent = () => {
+  const handleAddUpcomingEvent = () => {
     setEditingEvent(null);
+    setIsDialogOpen(true);
+  };
+
+  const handleAddPastHighlight = () => {
+    // We pass a mock object with isUpcoming: false to trigger the past highlights form by default
+    setEditingEvent({
+      id: '', // Empty ID signifies a new entry
+      name: '',
+      date: '',
+      description: '',
+      isUpcoming: false,
+      posterUrl: '/placeholder.svg',
+      summary: '',
+      galleryUrls: []
+    } as Event);
     setIsDialogOpen(true);
   };
 
@@ -43,10 +58,12 @@ const AdminDashboard = () => {
   };
 
   const handleSaveEvent = (data: any) => {
-    if (editingEvent) {
+    if (editingEvent && editingEvent.id) {
+      // Update existing
       setEvents(events.map(e => e.id === editingEvent.id ? { ...e, ...data } : e));
       showSuccess('Event updated successfully');
     } else {
+      // Create new
       const newEvent = { ...data, id: Math.random().toString(36).substr(2, 9) };
       setEvents([newEvent, ...events]);
       showSuccess('New event added successfully');
@@ -119,8 +136,8 @@ const AdminDashboard = () => {
             <h1 className="text-xl font-bold text-primary">Admin Dashboard</h1>
           </div>
           <div className="flex items-center gap-4">
-            <Button onClick={handleAddEvent} size="sm">
-              <Plus className="w-4 h-4 mr-2" /> New Event
+            <Button onClick={handleAddUpcomingEvent} size="sm">
+              <Plus className="w-4 h-4 mr-2" /> New Upcoming Event
             </Button>
             <Button variant="ghost" size="sm" onClick={handleLogout}>
               <LogOut className="w-4 h-4 mr-2" /> Logout
@@ -133,7 +150,7 @@ const AdminDashboard = () => {
         <Tabs defaultValue="upcoming" className="w-full">
           <div className="flex items-center justify-between mb-6">
             <TabsList>
-              <TabsTrigger value="upcoming">Upcoming Events ({upcomingEvents.length})</TabsTrigger>
+              <TabsTrigger value="upcoming">Upcoming ({upcomingEvents.length})</TabsTrigger>
               <TabsTrigger value="past">Past Highlights ({pastEvents.length})</TabsTrigger>
             </TabsList>
           </div>
@@ -143,6 +160,15 @@ const AdminDashboard = () => {
           </TabsContent>
           
           <TabsContent value="past">
+            <div className="mb-4 flex justify-between items-center bg-card p-4 rounded-lg border shadow-sm">
+              <div>
+                <h3 className="font-semibold">Event Gallery & Success Stories</h3>
+                <p className="text-sm text-muted-foreground">Share summaries and photos from completed events.</p>
+              </div>
+              <Button variant="outline" onClick={handleAddPastHighlight} className="border-primary text-primary hover:bg-primary/5">
+                <Upload className="w-4 h-4 mr-2" /> New Highlight
+              </Button>
+            </div>
             <EventList items={pastEvents} type="past" />
           </TabsContent>
         </Tabs>
@@ -151,7 +177,11 @@ const AdminDashboard = () => {
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="max-w-xl">
           <DialogHeader>
-            <DialogTitle>{editingEvent ? (editingEvent.isUpcoming ? 'Edit Event Info' : 'Update Past Highlights') : 'Add New Event'}</DialogTitle>
+            <DialogTitle>
+              {editingEvent && editingEvent.id 
+                ? (editingEvent.isUpcoming ? 'Edit Event Info' : 'Update Past Highlights') 
+                : (editingEvent && !editingEvent.isUpcoming ? 'Upload New Past Highlight' : 'Add New Upcoming Event')}
+            </DialogTitle>
           </DialogHeader>
           <AdminEventForm 
             initialData={editingEvent}

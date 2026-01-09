@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -15,7 +15,7 @@ import { Separator } from '@/components/ui/separator';
 const eventSchema = z.object({
   name: z.string().min(2, "Name is too short"),
   date: z.string().min(1, "Date is required"),
-  description: z.string().min(10, "Description should be more detailed"),
+  description: z.string().min(5, "Description is required"),
   isUpcoming: z.boolean().default(true),
   posterUrl: z.string().min(1, "Poster image is required"),
   summary: z.string().optional(),
@@ -44,6 +44,27 @@ const AdminEventForm: React.FC<AdminEventFormProps> = ({ initialData, onSubmit, 
       galleryUrls: [],
     },
   });
+
+  // Use useEffect to reset the form when initialData changes (e.g., switching between 'New Event' and 'New Highlight')
+  useEffect(() => {
+    if (initialData) {
+      form.reset(initialData);
+      setPosterPreview(initialData.posterUrl);
+      setGalleryPreviews(initialData.galleryUrls || []);
+    } else {
+      form.reset({
+        name: "",
+        date: "",
+        description: "",
+        isUpcoming: true,
+        posterUrl: "/placeholder.svg",
+        summary: "",
+        galleryUrls: [],
+      });
+      setPosterPreview(null);
+      setGalleryPreviews([]);
+    }
+  }, [initialData, form]);
 
   const isUpcoming = form.watch('isUpcoming');
 
@@ -89,7 +110,6 @@ const AdminEventForm: React.FC<AdminEventFormProps> = ({ initialData, onSubmit, 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 pb-4">
           
-          {/* Main Poster Section - Always visible */}
           <div className="space-y-4">
             <div className="flex items-center gap-2 text-primary font-semibold">
               <ImageIcon className="w-4 h-4" />
@@ -123,7 +143,6 @@ const AdminEventForm: React.FC<AdminEventFormProps> = ({ initialData, onSubmit, 
 
           <Separator />
 
-          {/* Event Details Section */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-primary">2. Basic Details</h3>
             
@@ -172,7 +191,7 @@ const AdminEventForm: React.FC<AdminEventFormProps> = ({ initialData, onSubmit, 
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Description / Call to Action</FormLabel>
+                  <FormLabel>{isUpcoming ? "Description / Call to Action" : "Brief Overview"}</FormLabel>
                   <FormControl><Textarea placeholder="What is this event about?" {...field} className="min-h-[80px]" /></FormControl>
                   <FormMessage />
                 </FormItem>
@@ -180,7 +199,6 @@ const AdminEventForm: React.FC<AdminEventFormProps> = ({ initialData, onSubmit, 
             />
           </div>
 
-          {/* Past Event Highlights Section - Visible only if isUpcoming is false */}
           {!isUpcoming && (
             <>
               <Separator />

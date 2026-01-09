@@ -8,8 +8,9 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Event } from '@/lib/data';
-import { ImagePlus, X, Upload } from 'lucide-react';
+import { ImagePlus, X, Upload, ImageIcon } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Separator } from '@/components/ui/separator';
 
 const eventSchema = z.object({
   name: z.string().min(2, "Name is too short"),
@@ -87,40 +88,52 @@ const AdminEventForm: React.FC<AdminEventFormProps> = ({ initialData, onSubmit, 
     <ScrollArea className="max-h-[80vh] px-1">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 pb-4">
+          
+          {/* Main Poster Section - Always visible */}
           <div className="space-y-4">
-            <h3 className="text-sm font-medium border-b pb-2">Basic Information</h3>
+            <div className="flex items-center gap-2 text-primary font-semibold">
+              <ImageIcon className="w-4 h-4" />
+              <span>1. Main Event Poster</span>
+            </div>
             
             <div className="space-y-2">
-              <FormLabel>Event Poster</FormLabel>
               {posterPreview && posterPreview !== "/placeholder.svg" ? (
-                <div className="relative aspect-video w-full rounded-lg overflow-hidden border bg-muted">
-                  <img src={posterPreview} alt="Preview" className="w-full h-full object-cover" />
+                <div className="relative aspect-video w-full rounded-lg overflow-hidden border-2 border-primary/20 bg-muted">
+                  <img src={posterPreview} alt="Poster" className="w-full h-full object-cover" />
                   <Button 
                     type="button" 
                     variant="destructive" 
                     size="icon" 
-                    className="absolute top-2 right-2 h-8 w-8"
+                    className="absolute top-2 right-2 h-8 w-8 rounded-full shadow-lg"
                     onClick={() => { setPosterPreview(null); form.setValue('posterUrl', "/placeholder.svg"); }}
                   >
                     <X className="h-4 w-4" />
                   </Button>
                 </div>
               ) : (
-                <div className="flex flex-col items-center justify-center border-2 border-dashed rounded-lg p-6 bg-muted/50 hover:bg-muted transition-colors cursor-pointer relative">
+                <div className="flex flex-col items-center justify-center border-2 border-dashed rounded-lg p-8 bg-muted/50 hover:bg-muted transition-colors cursor-pointer relative border-primary/20">
                   <input type="file" accept="image/*" className="absolute inset-0 opacity-0 cursor-pointer" onChange={handlePosterChange} />
-                  <ImagePlus className="h-10 w-10 text-muted-foreground mb-2" />
-                  <p className="text-sm text-muted-foreground">Click to upload main poster</p>
+                  <ImagePlus className="h-12 w-12 text-primary/60 mb-2" />
+                  <p className="text-sm font-medium text-primary/80 text-center">Click to upload the primary event poster</p>
+                  <p className="text-xs text-muted-foreground mt-1">This will be shown on the home page card</p>
                 </div>
               )}
             </div>
+          </div>
 
+          <Separator />
+
+          {/* Event Details Section */}
+          <div className="space-y-4">
+            <h3 className="text-sm font-semibold text-primary">2. Basic Details</h3>
+            
             <FormField
               control={form.control}
               name="name"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Event Name</FormLabel>
-                  <FormControl><Input {...field} /></FormControl>
+                  <FormControl><Input placeholder="Enter event title" {...field} /></FormControl>
                   <FormMessage />
                 </FormItem>
               )}
@@ -132,8 +145,8 @@ const AdminEventForm: React.FC<AdminEventFormProps> = ({ initialData, onSubmit, 
                 name="date"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Date</FormLabel>
-                    <FormControl><Input placeholder="e.g. Oct 25, 2024" {...field} /></FormControl>
+                    <FormLabel>Event Date</FormLabel>
+                    <FormControl><Input placeholder="e.g. October 26, 2024" {...field} /></FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -142,8 +155,10 @@ const AdminEventForm: React.FC<AdminEventFormProps> = ({ initialData, onSubmit, 
                 control={form.control}
                 name="isUpcoming"
                 render={({ field }) => (
-                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm bg-muted/20">
-                    <FormLabel className="text-sm">Upcoming Event?</FormLabel>
+                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm bg-primary/5 border-primary/10">
+                    <div className="space-y-0.5">
+                      <FormLabel className="text-sm">Is this an upcoming event?</FormLabel>
+                    </div>
                     <FormControl>
                       <Switch checked={field.value} onCheckedChange={field.onChange} />
                     </FormControl>
@@ -157,64 +172,72 @@ const AdminEventForm: React.FC<AdminEventFormProps> = ({ initialData, onSubmit, 
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Event Description</FormLabel>
-                  <FormControl><Textarea {...field} className="min-h-[80px]" /></FormControl>
+                  <FormLabel>Description / Call to Action</FormLabel>
+                  <FormControl><Textarea placeholder="What is this event about?" {...field} className="min-h-[80px]" /></FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
           </div>
 
+          {/* Past Event Highlights Section - Visible only if isUpcoming is false */}
           {!isUpcoming && (
-            <div className="space-y-4 pt-2">
-              <h3 className="text-sm font-medium border-b pb-2 text-primary">Past Event Highlights</h3>
-              
-              <FormField
-                control={form.control}
-                name="summary"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Detailed Highlights Summary</FormLabel>
-                    <FormControl>
-                      <Textarea 
-                        placeholder="Share the key takeaways, winners, or moments from the completed event..." 
-                        {...field} 
-                        className="min-h-[120px]" 
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+            <>
+              <Separator />
+              <div className="space-y-4 pt-2 animate-in fade-in duration-500">
+                <div className="flex items-center gap-2 text-primary font-semibold">
+                  <Upload className="w-4 h-4" />
+                  <span>3. Event Highlights Gallery</span>
+                </div>
+                
+                <FormField
+                  control={form.control}
+                  name="summary"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Event Success Summary</FormLabel>
+                      <FormControl>
+                        <Textarea 
+                          placeholder="How did the event go? Mention key highlights, winners, or guest speakers." 
+                          {...field} 
+                          className="min-h-[120px]" 
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-              <div className="space-y-2">
-                <FormLabel>Event Gallery (Multiple Photos)</FormLabel>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-4">
-                  {galleryPreviews.map((url, idx) => (
-                    <div key={idx} className="relative aspect-square rounded-md overflow-hidden border">
-                      <img src={url} alt={`Gallery ${idx}`} className="w-full h-full object-cover" />
-                      <button 
-                        type="button"
-                        onClick={() => removeGalleryImage(idx)}
-                        className="absolute top-1 right-1 bg-destructive text-destructive-foreground rounded-full p-1 hover:bg-destructive/80"
-                      >
-                        <X className="w-3 h-3" />
-                      </button>
-                    </div>
-                  ))}
-                  <div className="relative aspect-square border-2 border-dashed rounded-md flex flex-col items-center justify-center bg-muted/30 hover:bg-muted transition-colors cursor-pointer">
-                    <input type="file" multiple accept="image/*" className="absolute inset-0 opacity-0 cursor-pointer" onChange={handleGalleryChange} />
-                    <Upload className="h-6 w-6 text-muted-foreground mb-1" />
-                    <span className="text-[10px] text-muted-foreground">Add Photo</span>
+                <div className="space-y-3">
+                  <FormLabel>Gallery Photographs (Bulk Upload)</FormLabel>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    {galleryPreviews.map((url, idx) => (
+                      <div key={idx} className="relative aspect-square rounded-md overflow-hidden border shadow-sm group">
+                        <img src={url} alt={`Gallery ${idx}`} className="w-full h-full object-cover transition-transform group-hover:scale-110" />
+                        <button 
+                          type="button"
+                          onClick={() => removeGalleryImage(idx)}
+                          className="absolute top-1 right-1 bg-destructive/90 text-destructive-foreground rounded-full p-1 shadow-md hover:bg-destructive"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      </div>
+                    ))}
+                    <label className="relative aspect-square border-2 border-dashed border-primary/20 rounded-md flex flex-col items-center justify-center bg-primary/5 hover:bg-primary/10 transition-colors cursor-pointer">
+                      <input type="file" multiple accept="image/*" className="hidden" onChange={handleGalleryChange} />
+                      <Plus className="h-8 w-8 text-primary/60 mb-1" />
+                      <span className="text-[10px] font-semibold text-primary/80">Add Photos</span>
+                    </label>
                   </div>
+                  <p className="text-[10px] text-muted-foreground italic">You can select multiple photos at once.</p>
                 </div>
               </div>
-            </div>
+            </>
           )}
 
-          <div className="flex gap-3 pt-4 border-t">
-            <Button type="button" variant="outline" className="flex-1" onClick={onCancel}>Cancel</Button>
-            <Button type="submit" className="flex-1">Save Changes</Button>
+          <div className="flex gap-3 pt-6 border-t">
+            <Button type="button" variant="ghost" className="flex-1" onClick={onCancel}>Discard</Button>
+            <Button type="submit" className="flex-1 shadow-lg">Save Event Details</Button>
           </div>
         </form>
       </Form>

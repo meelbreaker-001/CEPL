@@ -8,9 +8,11 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Event } from '@/lib/data';
-import { ImagePlus, X, Upload, ImageIcon, Plus } from 'lucide-react';
+import { ImagePlus, X, Upload, ImageIcon, Plus, Loader2 } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
+import { uploadFile } from '@/utils/supabaseStorage';
+import { showError } from '@/utils/toast';
 
 const eventSchema = z.object({
   name: z.string().min(2, "Name is too short"),
@@ -29,6 +31,7 @@ interface AdminEventFormProps {
 }
 
 const AdminEventForm: React.FC<AdminEventFormProps> = ({ initialData, onSubmit, onCancel }) => {
+  const [isUploading, setIsUploading] = useState(false);
   const [posterPreview, setPosterPreview] = useState<string | null>(initialData?.posterUrl || null);
   const [galleryPreviews, setGalleryPreviews] = useState<string[]>(initialData?.galleryUrls || []);
 
@@ -45,64 +48,55 @@ const AdminEventForm: React.FC<AdminEventFormProps> = ({ initialData, onSubmit, 
     },
   });
 
-  // Use useEffect to reset the form when initialData changes (e.g., switching between 'New Event' and 'New Highlight')
   useEffect(() => {
     if (initialData) {
       form.reset(initialData);
       setPosterPreview(initialData.posterUrl);
       setGalleryPreviews(initialData.galleryUrls || []);
-    } else {
-      form.reset({
-        name: "",
-        date: "",
-        description: "",
-        isUpcoming: true,
-        posterUrl: "/placeholder.svg",
-        summary: "",
-        galleryUrls: [],
-      });
-      setPosterPreview(null);
-      setGalleryPreviews([]);
     }
   }, [initialData, form]);
 
   const isUpcoming = form.watch('isUpcoming');
 
-  const handlePosterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePosterChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const base64String = reader.result as string;
-        setPosterPreview(base64String);
-        form.setValue('posterUrl', base64String);
-      };
-      reader.readAsDataURL(file);
+      try {
+        setIsUploading(true);
+        const url = await uploadFile(file, 'posters');
+        setPosterPreview(url);
+        form.setValue('posterUrl', url);
+      } catch (error: any) {
+        showError("Failed to upload poster: " + error.message);
+      } finally {
+        setIsUploading(false);
+      }
     }
   };
 
-  const handleGalleryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleGalleryChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
-    files.forEach(file => {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const base64String = reader.result as string;
-        setGalleryPreviews(prev => {
-          const newGallery = [...prev, base64String];
-          form.setValue('galleryUrls', newGallery);
-          return newGallery;
-        });
-      };
-      reader.readAsDataURL(file);
-    });
+    if (files.length === 0) return;
+
+    try {
+      setIsUploading(true);
+      const uploadPromises = files.map(file => uploadFile(file, 'gallery'));
+      const urls = await Promise.all(uploadPromises);
+      
+      const newGallery = [...galleryPreviews, ...urls];
+      setGalleryPreviews(newGallery);
+      form.setValue('galleryUrls', newGallery);
+    } catch (error: any) {
+      showError("Failed to upload gallery images: " + error.message);
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const removeGalleryImage = (index: number) => {
-    setGalleryPreviews(prev => {
-      const newGallery = prev.filter((_, i) => i !== index);
-      form.setValue('galleryUrls', newGallery);
-      return newGallery;
-    });
+    const newGallery = galleryPreviews.filter((_, i) => i !== index);
+    setGalleryPreviews(newGallery);
+    form.setValue('galleryUrls', newGallery);
   };
 
   return (
@@ -132,10 +126,21 @@ const AdminEventForm: React.FC<AdminEventFormProps> = ({ initialData, onSubmit, 
                 </div>
               ) : (
                 <div className="flex flex-col items-center justify-center border-2 border-dashed rounded-lg p-8 bg-muted/50 hover:bg-muted transition-colors cursor-pointer relative border-primary/20">
-                  <input type="file" accept="image/*" className="absolute inset-0 opacity-0 cursor-pointer" onChange={handlePosterChange} />
-                  <ImagePlus className="h-12 w-12 text-primary/60 mb-2" />
-                  <p className="text-sm font-medium text-primary/80 text-center">Click to upload the primary event poster</p>
-                  <p className="text-xs text-muted-foreground mt-1">This will be shown on the home page card</p>
+                  <input 
+                    type="file" 
+                    accept="image/*" 
+                    className="absolute inset-0 opacity-0 cursor-pointer" 
+                    onChange={handlePosterChange}
+                    disabled={isUploading}
+                  />
+                  {isUploading ? (
+                    <Loader2 className="h-12 w-12 text-primary/60 animate-spin mb-2" />
+                  ) : (
+                    <ImagePlus className="h-12 w-12 text-primary/60 mb-2" />
+                  )}
+                  <p className="text-sm font-medium text-primary/80 text-center">
+                    {isUploading ? "Uploading..." : "Click to upload the primary event poster"}
+                  </p>
                 </div>
               )}
             </div>
@@ -241,10 +246,23 @@ const AdminEventForm: React.FC<AdminEventFormProps> = ({ initialData, onSubmit, 
                         </button>
                       </div>
                     ))}
-                    <label className="relative aspect-square border-2 border-dashed border-primary/20 rounded-md flex flex-col items-center justify-center bg-primary/5 hover:bg-primary/10 transition-colors cursor-pointer">
-                      <input type="file" multiple accept="image/*" className="hidden" onChange={handleGalleryChange} />
-                      <Plus className="h-8 w-8 text-primary/60 mb-1" />
-                      <span className="text-[10px] font-semibold text-primary/80">Add Photos</span>
+                    <label className={`relative aspect-square border-2 border-dashed border-primary/20 rounded-md flex flex-col items-center justify-center bg-primary/5 hover:bg-primary/10 transition-colors cursor-pointer ${isUploading ? 'opacity-50 cursor-not-allowed' : ''}`}>
+                      <input 
+                        type="file" 
+                        multiple 
+                        accept="image/*" 
+                        className="hidden" 
+                        onChange={handleGalleryChange}
+                        disabled={isUploading}
+                      />
+                      {isUploading ? (
+                        <Loader2 className="h-8 w-8 text-primary/60 animate-spin" />
+                      ) : (
+                        <Plus className="h-8 w-8 text-primary/60 mb-1" />
+                      )}
+                      <span className="text-[10px] font-semibold text-primary/80">
+                        {isUploading ? "Uploading..." : "Add Photos"}
+                      </span>
                     </label>
                   </div>
                   <p className="text-[10px] text-muted-foreground italic">You can select multiple photos at once.</p>
@@ -255,7 +273,9 @@ const AdminEventForm: React.FC<AdminEventFormProps> = ({ initialData, onSubmit, 
 
           <div className="flex gap-3 pt-6 border-t">
             <Button type="button" variant="ghost" className="flex-1" onClick={onCancel}>Discard</Button>
-            <Button type="submit" className="flex-1 shadow-lg">Save Event Details</Button>
+            <Button type="submit" className="flex-1 shadow-lg" disabled={isUploading}>
+              {isUploading ? "Please Wait..." : "Save Event Details"}
+            </Button>
           </div>
         </form>
       </Form>

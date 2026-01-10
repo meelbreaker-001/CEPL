@@ -4,17 +4,25 @@ import { supabase } from '@/integrations/supabase/client';
 import { Event } from '@/lib/data';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Plus, LogOut, Edit2, Trash2, Calendar, Image as ImageIcon, History, Upload } from 'lucide-react';
+import { Plus, LogOut, Edit2, Trash2, Calendar, Image as ImageIcon, History, Upload, Users, Eye } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AdminEventForm from '@/components/AdminEventForm';
+import EventRegistrationsDialog from '@/components/EventRegistrationsDialog';
 import { showSuccess, showError } from '@/utils/toast';
+
+// Extend Event type to include registration count
+interface EventWithCount extends Event {
+  registrationCount: number;
+}
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
-  const [events, setEvents] = useState<Event[]>([]);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [events, setEvents] = useState<EventWithCount[]>([]);
+  const [isFormDialogOpen, setIsFormDialogOpen] = useState(false);
+  const [isRegDialogOpen, setIsRegDialogOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
+  const [selectedEventForReg, setSelectedEventForReg] = useState<{ id: string, name: string } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -31,27 +39,33 @@ const AdminDashboard = () => {
 
   const fetchEvents = async () => {
     setIsLoading(true);
-    const { data, error } = await supabase
+    
+    // 1. Fetch events
+    const { data: eventData, error: eventError } = await supabase
       .from('events')
-      .select('*')
+      .select('*, registrations(count)') // Select events and count registrations
       .order('created_at', { ascending: false });
 
-    if (error) {
+    if (eventError) {
       showError('Failed to fetch events');
-    } else {
-      // Map snake_case from DB to camelCase for UI
-      const mappedEvents = data.map((e: any) => ({
-        id: e.id,
-        name: e.name,
-        date: e.date,
-        description: e.description,
-        isUpcoming: e.is_upcoming,
-        posterUrl: e.poster_url,
-        summary: e.summary,
-        galleryUrls: e.gallery_urls,
-      }));
-      setEvents(mappedEvents);
+      setIsLoading(false);
+      return;
     }
+
+    // 2. Map and process data
+    const mappedEvents: EventWithCount[] = eventData.map((e: any) => ({
+      id: e.id,
+      name: e.name,
+      date: e.date,
+      description: e.description,
+      isUpcoming: e.is_upcoming,
+      posterUrl: e.poster_url,
+      summary: e.summary,
+      galleryUrls: e.gallery_urls,
+      registrationCount: e.registrations?.[0]?.count || 0,
+    }));
+    
+    setEvents(mappedEvents);
     setIsLoading(false);
   };
 
@@ -62,7 +76,7 @@ const AdminDashboard = () => {
 
   const handleAddUpcomingEvent = () => {
     setEditingEvent(null);
-    setIsDialogOpen(true);
+    setIsFormDialogOpen(true);
   };
 
   const handleAddPastHighlight = () => {
@@ -76,12 +90,17 @@ const AdminDashboard = () => {
       summary: '',
       galleryUrls: []
     } as Event);
-    setIsDialogOpen(true);
+    setIsFormDialogOpen(true);
   };
 
   const handleEditEvent = (event: Event) => {
     setEditingEvent(event);
-    setIsDialogOpen(true);
+    setIsFormDialogOpen(true);
+  };
+
+  const handleViewRegistrations = (event: EventWithCount) => {
+    setSelectedEventForReg({ id: event.id, name: event.name });
+    setIsRegDialogOpen(true);
   };
 
   const handleDeleteEvent = async (id: string) => {
@@ -133,13 +152,13 @@ const AdminDashboard = () => {
         fetchEvents();
       }
     }
-    setIsDialogOpen(false);
+    setIsFormDialogOpen(false);
   };
 
   const upcomingEvents = events.filter(e => e.isUpcoming);
   const pastEvents = events.filter(e => !e.isUpcoming);
 
-  const EventList = ({ items, type }: { items: Event[], type: 'upcoming' | 'past' }) => (
+  const EventList = ({ items, type }: { items: EventWithCount[], type: 'upcoming' | 'past' }) => (
     <div className="space-y-4">
       {items.length === 0 ? (
         <p className="text-center py-10 text-muted-foreground border rounded-lg bg-background">
@@ -168,8 +187,18 @@ const AdminDashboard = () => {
                         <ImageIcon className="w-3 h-3 mr-1" /> {event.galleryUrls.length} photos in gallery
                       </p>
                     )}
+                    {type === 'upcoming' && (
+                      <p className="text-xs text-green-600 dark:text-green-400 font-medium flex items-center mt-1">
+                        <Users className="w-3 h-3 mr-1" /> {event.registrationCount} Registrations
+                      </p>
+                    )}
                   </div>
                   <div className="flex items-center gap-2 mt-3 md:mt-0">
+                    {type === 'upcoming' && (
+                      <Button variant="outline" size="sm" onClick={() => handleViewRegistrations(event)}>
+                        <Eye className="w-4 h-4 md:mr-2" /> <span className="hidden md:inline">View Registrations</span>
+                      </Button>
+                    )}
                     <Button variant="outline" size="sm" onClick={() => handleEditEvent(event)}>
                       <Edit2 className="w-4 h-4 md:mr-2" /> <span className="hidden md:inline">{type === 'past' ? 'Update Highlights' : 'Edit Info'}</span>
                     </Button>
@@ -254,7 +283,7 @@ const AdminDashboard = () => {
         </Tabs>
       </main>
 
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+      <Dialog open={isFormDialogOpen} onOpenChange={setIsFormDialogOpen}>
         <DialogContent className="max-w-xl">
           <DialogHeader>
             <DialogTitle>
@@ -266,10 +295,17 @@ const AdminDashboard = () => {
           <AdminEventForm 
             initialData={editingEvent}
             onSubmit={handleSaveEvent}
-            onCancel={() => setIsDialogOpen(false)}
+            onCancel={() => setIsFormDialogOpen(false)}
           />
         </DialogContent>
       </Dialog>
+
+      <EventRegistrationsDialog
+        eventId={selectedEventForReg?.id || null}
+        eventName={selectedEventForReg?.name || ''}
+        isOpen={isRegDialogOpen}
+        onClose={() => setIsRegDialogOpen(false)}
+      />
     </div>
   );
 };

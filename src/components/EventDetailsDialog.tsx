@@ -96,6 +96,7 @@ const EventDetailsDialog: React.FC<EventDetailsDialogProps> = ({ event, isOpen, 
               </div>
             ) : (
               <RegistrationForm 
+                eventId={event.id} // Pass event ID here
                 eventName={event.name} 
                 onSuccess={onClose} 
                 onCancel={() => setIsRegistering(false)} 

@@ -13,7 +13,8 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { showSuccess } from '@/utils/toast';
+import { showSuccess, showError, showLoading, dismissToast } from '@/utils/toast';
+import { supabase } from '@/integrations/supabase/client';
 
 const formSchema = z.object({
   fullName: z.string().min(2, "Name must be at least 2 characters"),
@@ -24,12 +25,13 @@ const formSchema = z.object({
 });
 
 interface RegistrationFormProps {
+  eventId: string;
   eventName: string;
   onSuccess: () => void;
   onCancel: () => void;
 }
 
-const RegistrationForm: React.FC<RegistrationFormProps> = ({ eventName, onSuccess, onCancel }) => {
+const RegistrationForm: React.FC<RegistrationFormProps> = ({ eventId, eventName, onSuccess, onCancel }) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -41,10 +43,33 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({ eventName, onSucces
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log("Registration Details:", values);
-    showSuccess(`Successfully registered for ${eventName}!`);
-    onSuccess();
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    const toastId = showLoading(`Registering for ${eventName}...`);
+    
+    try {
+      const { error } = await supabase
+        .from('registrations')
+        .insert({
+          event_id: eventId,
+          full_name: values.fullName,
+          email: values.email,
+          phone: values.phone,
+          department: values.department,
+          year: values.year,
+        });
+
+      if (error) {
+        throw error;
+      }
+
+      dismissToast(toastId);
+      showSuccess(`Successfully registered for ${eventName}!`);
+      onSuccess();
+    } catch (error: any) {
+      dismissToast(toastId);
+      console.error("Registration error:", error);
+      showError("Registration failed. Please try again.");
+    }
   }
 
   return (
@@ -152,8 +177,8 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({ eventName, onSucces
             <Button type="button" variant="outline" className="flex-1" onClick={onCancel}>
               Cancel
             </Button>
-            <Button type="submit" className="flex-1">
-              Confirm Registration
+            <Button type="submit" className="flex-1" disabled={form.formState.isSubmitting}>
+              {form.formState.isSubmitting ? 'Registering...' : 'Confirm Registration'}
             </Button>
           </div>
         </form>

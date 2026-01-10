@@ -49,12 +49,12 @@ const EventDetailsDialog: React.FC<EventDetailsDialogProps> = ({ event, isOpen, 
           <div className="p-6 pt-2">
             {!isRegistering ? (
               <div className="space-y-6">
-                {/* Poster Image */}
-                <div className="aspect-video bg-muted rounded-xl border shadow-sm overflow-hidden">
+                {/* Poster Image - Set to full ratio (h-auto) */}
+                <div className="w-full bg-muted rounded-xl border shadow-sm overflow-hidden">
                   <img 
                     src={event.posterUrl} 
                     alt={`Poster for ${event.name}`} 
-                    className="w-full h-full object-cover"
+                    className="w-full h-auto block"
                   />
                 </div>
                 

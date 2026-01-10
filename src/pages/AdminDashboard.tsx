@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Event } from '@/lib/data';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Plus, LogOut, Edit2, Trash2, Calendar, Image as ImageIcon, History, Upload, Users, Eye } from 'lucide-react';
+import { Plus, LogOut, Edit2, Trash2, Calendar, Image as ImageIcon, History, Upload, Users, Eye, Home } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AdminEventForm from '@/components/AdminEventForm';
@@ -226,6 +226,11 @@ const AdminDashboard = () => {
             <h1 className="text-xl font-bold text-primary">Admin Dashboard</h1>
           </div>
           <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" asChild>
+              <Link to="/">
+                <Home className="w-4 h-4 mr-2" /> Home
+              </Link>
+            </Button>
             <Button onClick={handleAddUpcomingEvent} size="sm">
               <Plus className="w-4 h-4 mr-2" /> New Upcoming Event
             </Button>

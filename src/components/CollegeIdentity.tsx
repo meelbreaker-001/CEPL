@@ -22,7 +22,7 @@ const CollegeIdentity: React.FC<CollegeIdentityProps> = ({ logoUrl, redirectUrl 
           <img 
             src={logoUrl} 
             alt="College Logo" 
-            className="h-24 mx-auto rounded-xl shadow-sm overflow-hidden" 
+            className="h-16 sm:h-20 md:h-24 mx-auto rounded-xl shadow-sm overflow-hidden" 
           />
         </a>
         

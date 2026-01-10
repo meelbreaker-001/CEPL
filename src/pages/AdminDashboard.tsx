@@ -248,6 +248,7 @@ const AdminDashboard = () => {
               <TabsTrigger value="upcoming">Upcoming ({upcomingEvents.length})</TabsTrigger>
               <TabsTrigger value="past">Past Highlights ({pastEvents.length})</TabsTrigger>
             </TabsList>
+            {/* This button is for desktop/tablet view when the 'past' tab is not active */}
             <TabsContent value="past" className="p-0 m-0 w-full sm:w-auto data-[state=active]:hidden sm:data-[state=active]:block">
               <Button variant="outline" onClick={handleAddPastHighlight} className="border-primary text-primary hover:bg-primary/5 w-full sm:w-auto">
                 <Upload className="w-4 h-4 mr-2" /> New Highlight
@@ -255,8 +256,8 @@ const AdminDashboard = () => {
             </TabsContent>
           </div>
           
-          {/* Past Highlights button for mobile when past tab is active */}
-          <TabsContent value="past" className="p-0 m-0 w-full sm:w-auto data-[state=inactive]:hidden sm:data-[state=inactive]:hidden">
+          {/* Past Highlights button for mobile when past tab is active (This is the redundant section I'm removing) */}
+          {/* <TabsContent value="past" className="p-0 m-0 w-full sm:w-auto data-[state=inactive]:hidden sm:data-[state=inactive]:hidden">
             <div className="mb-4 flex justify-between items-center bg-card p-4 rounded-lg border shadow-sm">
               <div>
                 <h3 className="font-semibold">Event Gallery & Success Stories</h3>
@@ -267,22 +268,14 @@ const AdminDashboard = () => {
               </Button>
             </div>
             <EventList items={pastEvents} type="past" />
-          </TabsContent>
+          </TabsContent> */}
 
           <TabsContent value="upcoming">
             <EventList items={upcomingEvents} type="upcoming" />
           </TabsContent>
           
           <TabsContent value="past" className="data-[state=inactive]:hidden sm:data-[state=inactive]:block">
-            <div className="mb-4 hidden sm:flex justify-between items-center bg-card p-4 rounded-lg border shadow-sm">
-              <div>
-                <h3 className="font-semibold">Event Gallery & Success Stories</h3>
-                <p className="text-sm text-muted-foreground">Share summaries and photos from completed events.</p>
-              </div>
-              <Button variant="outline" onClick={handleAddPastHighlight} className="border-primary text-primary hover:bg-primary/5">
-                <Upload className="w-4 h-4 mr-2" /> New Highlight
-              </Button>
-            </div>
+            {/* Removed the redundant section here */}
             <EventList items={pastEvents} type="past" />
           </TabsContent>
         </Tabs>

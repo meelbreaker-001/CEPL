@@ -2,7 +2,7 @@ import React from 'react';
 import { COLLEGE_INFO, SocialLink } from '@/lib/data';
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
-import { Mail, Clock, Send } from 'lucide-react';
+import { Clock, Send } from 'lucide-react';
 
 interface AppFooterProps {
   info: typeof COLLEGE_INFO;
@@ -29,12 +29,6 @@ const AppFooter: React.FC<AppFooterProps> = ({ info }) => {
             <h4 className="text-lg font-semibold mb-2 text-primary">Contact</h4>
             <div className="space-y-2">
               
-              {/* Email */}
-              <div className="flex items-center justify-center md:justify-start text-sm text-muted-foreground">
-                <Mail className="w-4 h-4 mr-2 flex-shrink-0" />
-                <a href={`mailto:${info.email}`} className="hover:text-primary transition-colors">{info.email}</a>
-              </div>
-
               {/* Working Hours */}
               <div className="flex items-center justify-center md:justify-start text-sm text-muted-foreground">
                 <Clock className="w-4 h-4 mr-2 flex-shrink-0" />

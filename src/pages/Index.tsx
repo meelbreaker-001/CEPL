@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ShieldCheck } from 'lucide-react';
+import { ShieldCheck, Bell } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { COLLEGE_INFO, Event } from '@/lib/data';
 import CollegeIdentity from '@/components/CollegeIdentity';
@@ -76,6 +76,15 @@ const Index = () => {
         logoUrl="https://adhiyamaan.ac.in/ace/images/logo33.gif" 
         redirectUrl="https://adhiyamaan.ac.in/ace/" 
       />
+
+      {/* Main Title Section */}
+      <div className="container mx-auto px-4 py-6 text-center">
+        <h1 className="text-4xl md:text-5xl font-extrabold text-primary flex items-center justify-center gap-3 tracking-tight">
+          <Bell className="w-8 h-8 md:w-10 md:h-10 text-primary" />
+          EVENT LANDINGS
+        </h1>
+      </div>
+      {/* End Main Title Section */}
 
       <main className="flex-grow">
         {isLoading ? (

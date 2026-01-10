@@ -1,14 +1,14 @@
 "use client";
 
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { showSuccess, showError } from '@/utils/toast';
-import { Lock, Eye, EyeOff } from 'lucide-react';
+import { Lock, Eye, EyeOff, ArrowLeft } from 'lucide-react';
 
 const AdminLogin = () => {
   const [adminId, setAdminId] = useState('');
@@ -43,7 +43,18 @@ const AdminLogin = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-muted/30 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-muted/30 p-4 relative">
+      
+      {/* Homepage Return Button */}
+      <div className="absolute top-4 left-4">
+        <Button variant="outline" asChild>
+          <Link to="/">
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Home
+          </Link>
+        </Button>
+      </div>
+
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <div className="flex justify-center mb-4">

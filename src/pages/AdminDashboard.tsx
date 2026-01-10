@@ -231,9 +231,6 @@ const AdminDashboard = () => {
                 <Home className="w-4 h-4 mr-2" /> Home
               </Link>
             </Button>
-            <Button onClick={handleAddUpcomingEvent} size="sm">
-              <Plus className="w-4 h-4 mr-2" /> New Upcoming Event
-            </Button>
             <Button variant="ghost" size="sm" onClick={handleLogout}>
               <LogOut className="w-4 h-4 mr-2" /> Logout
             </Button>
@@ -243,39 +240,26 @@ const AdminDashboard = () => {
 
       <main className="container mx-auto px-4 py-8">
         <Tabs defaultValue="upcoming" className="w-full">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
-            <TabsList>
-              <TabsTrigger value="upcoming">Upcoming ({upcomingEvents.length})</TabsTrigger>
-              <TabsTrigger value="past">Past Highlights ({pastEvents.length})</TabsTrigger>
-            </TabsList>
-            {/* This button is for desktop/tablet view when the 'past' tab is not active */}
-            <TabsContent value="past" className="p-0 m-0 w-full sm:w-auto data-[state=active]:hidden sm:data-[state=active]:block">
-              <Button variant="outline" onClick={handleAddPastHighlight} className="border-primary text-primary hover:bg-primary/5 w-full sm:w-auto">
-                <Upload className="w-4 h-4 mr-2" /> New Highlight
-              </Button>
-            </TabsContent>
-          </div>
+          <TabsList className="mb-6">
+            <TabsTrigger value="upcoming">Upcoming ({upcomingEvents.length})</TabsTrigger>
+            <TabsTrigger value="past">Past Highlights ({pastEvents.length})</TabsTrigger>
+          </TabsList>
           
-          {/* Past Highlights button for mobile when past tab is active (This is the redundant section I'm removing) */}
-          {/* <TabsContent value="past" className="p-0 m-0 w-full sm:w-auto data-[state=inactive]:hidden sm:data-[state=inactive]:hidden">
-            <div className="mb-4 flex justify-between items-center bg-card p-4 rounded-lg border shadow-sm">
-              <div>
-                <h3 className="font-semibold">Event Gallery & Success Stories</h3>
-                <p className="text-sm text-muted-foreground">Share summaries and photos from completed events.</p>
-              </div>
+          <TabsContent value="upcoming">
+            <div className="flex justify-end mb-4">
+              <Button onClick={handleAddUpcomingEvent} size="sm">
+                <Plus className="w-4 h-4 mr-2" /> New Upcoming Event
+              </Button>
+            </div>
+            <EventList items={upcomingEvents} type="upcoming" />
+          </TabsContent>
+          
+          <TabsContent value="past">
+            <div className="flex justify-end mb-4">
               <Button variant="outline" onClick={handleAddPastHighlight} className="border-primary text-primary hover:bg-primary/5">
                 <Upload className="w-4 h-4 mr-2" /> New Highlight
               </Button>
             </div>
-            <EventList items={pastEvents} type="past" />
-          </TabsContent> */}
-
-          <TabsContent value="upcoming">
-            <EventList items={upcomingEvents} type="upcoming" />
-          </TabsContent>
-          
-          <TabsContent value="past" className="data-[state=inactive]:hidden sm:data-[state=inactive]:block">
-            {/* Removed the redundant section here */}
             <EventList items={pastEvents} type="past" />
           </TabsContent>
         </Tabs>

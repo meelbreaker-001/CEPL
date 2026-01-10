@@ -8,7 +8,10 @@ import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { showSuccess, showError } from '@/utils/toast';
-import { Lock, Eye, EyeOff, ArrowLeft } from 'lucide-react';
+import { Eye, EyeOff, ArrowLeft } from 'lucide-react';
+
+// Hardcoded logo URL for consistency with CollegeIdentity component
+const COLLEGE_LOGO_URL = "https://adhiyamaan.ac.in/ace/images/logo33.gif";
 
 const AdminLogin = () => {
   const [adminId, setAdminId] = useState('');
@@ -58,9 +61,12 @@ const AdminLogin = () => {
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <div className="flex justify-center mb-4">
-            <div className="p-3 rounded-full bg-primary/10">
-              <Lock className="w-6 h-6 text-primary" />
-            </div>
+            {/* College Logo */}
+            <img 
+              src={COLLEGE_LOGO_URL} 
+              alt="College Logo" 
+              className="h-16 w-auto rounded-xl shadow-sm" 
+            />
           </div>
           <CardTitle className="text-2xl text-center">Admin Login</CardTitle>
           <CardDescription className="text-center">
